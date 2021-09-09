@@ -53,7 +53,7 @@ async function main() {
     .process(await read('readme.md'))
 
   console.log(file.data)
-  console.log(String(file), file.data)
+  console.log(String(file))
 }
 ```
 
