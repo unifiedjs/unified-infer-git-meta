@@ -8,15 +8,18 @@ import path from 'node:path'
 import process from 'node:process'
 import {promisify} from 'node:util'
 import test from 'tape'
-import {toVFile, write} from 'to-vfile'
+import semver from 'semver'
 import rimraf from 'rimraf'
 import {nanoid} from 'nanoid'
+import {toVFile, write} from 'to-vfile'
 import {unified} from 'unified'
 import unifiedInferGitMeta from '../index.js'
 
 const exec = promisify(cp.exec)
 
 const current = process.cwd()
+
+const localeAware = semver.gte(process.versions.node, '14.0.0')
 
 process.chdir(path.join(current, 'test'))
 
@@ -40,7 +43,7 @@ test('unifiedInferGitMeta', async (t) => {
   await write({path: 'example-b.txt', value: String(nanoid())})
   await exec('git add *.txt')
   await exec('git commit -m two')
-  await sleep(200)
+  await sleep(400)
 
   // Bravo commits once on `a`, `b`, and `c`.
   await exec('git config user.email bravo@example.com')
@@ -50,7 +53,7 @@ test('unifiedInferGitMeta', async (t) => {
   await write({path: 'example-c.txt', value: String(nanoid())})
   await exec('git add *.txt')
   await exec('git commit -m three')
-  await sleep(200)
+  await sleep(400)
 
   // Charlie commits once on `a`, `b`, and `c`.
   await exec('git config user.email charlie@example.com')
@@ -60,7 +63,7 @@ test('unifiedInferGitMeta', async (t) => {
   await write({path: 'example-c.txt', value: String(nanoid())})
   await exec('git add *.txt')
   await exec('git commit -m four')
-  await sleep(200)
+  await sleep(400)
 
   // Delta commits once on `a`.
   await exec('git config user.email delta@example.com')
@@ -68,7 +71,7 @@ test('unifiedInferGitMeta', async (t) => {
   await write({path: 'example-a.txt', value: String(nanoid())})
   await exec('git add *.txt')
   await exec('git commit -m five')
-  await sleep(200)
+  await sleep(400)
 
   // An uncommited file
   await write({path: 'example-d.txt', value: String(nanoid())})
@@ -119,13 +122,13 @@ test('unifiedInferGitMeta', async (t) => {
   t.equal(
     (await run('example-a.txt', {locales: 'en-GB'})).author,
     // Note: no oxford comma.
-    'Alpha, Bravo and others',
+    localeAware ? 'Alpha, Bravo and others' : 'Alpha, Bravo, and others',
     '`author`: should support `locales`'
   )
 
   t.equal(
     (await run('example-a.txt', {locales: 'ru', authorRest: 'другие'})).author,
-    'Alpha, Bravo и другие',
+    localeAware ? 'Alpha, Bravo и другие' : 'Alpha, Bravo, and другие',
     '`author`: should support `authorRest`'
   )
 
