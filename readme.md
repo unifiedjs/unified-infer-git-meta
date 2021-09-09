@@ -28,7 +28,7 @@ npm install unified-infer-git-meta
 import {read} from 'to-vfile'
 import {unified} from 'unified'
 import remarkParse from 'remark-parse'
-import unifiedInferGitMeta from './index.js'
+import unifiedInferGitMeta from 'unified-infer-git-meta'
 import remarkRehype from 'remark-rehype'
 import rehypeDocument from 'rehype-document'
 import rehypeMeta from 'rehype-meta'
