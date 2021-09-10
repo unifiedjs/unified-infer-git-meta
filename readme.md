@@ -120,6 +120,15 @@ If the list of authors had to be abbreviated, the last author is instead
 replaced by `authorRest`.
 Set `limit: -1` to receive all author names.
 
+## Related
+
+*   [`rehype-meta`](https://github.com/rehypejs/rehype-meta)
+    — Add metadata to the head of a document
+*   [`rehype-infer-title-meta`](https://github.com/rehypejs/rehype-infer-title-meta)
+    — Infer file metadata from the title of a document
+*   [`rehype-infer-description-meta`](https://github.com/rehypejs/rehype-infer-description-meta)
+    — Infer file metadata from the description of a document
+
 ## Contribute
 
 See [`contributing.md`][contributing] in [`unifiedjs/.github`][health] for ways
