@@ -128,6 +128,8 @@ Set `limit: -1` to receive all author names.
     — Infer file metadata from the title of a document
 *   [`rehype-infer-description-meta`](https://github.com/rehypejs/rehype-infer-description-meta)
     — Infer file metadata from the description of a document
+*   [`rehype-infer-reading-time-meta`](https://github.com/rehypejs/rehype-infer-reading-time-meta)
+    — Infer file metadata from the reading time of a document
 
 ## Contribute
 
