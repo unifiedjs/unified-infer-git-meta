@@ -1,6 +1,6 @@
 {
   "name": "unified-infer-git-meta",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "unified plugin to infer some `meta` from Git",
   "license": "MIT",
   "keywords": [
