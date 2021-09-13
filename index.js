@@ -47,7 +47,7 @@ export default function unifiedInferGitMeta(options = {}) {
   // eslint-disable-next-line complexity
   return async (_, file) => {
     const {stdout} = await promisify(exec)(
-      'git log --all --format="%aN,%aE,\\"%cD\\"" "' + file.path + '"',
+      'git log --all --follow --format="%aN,%aE,\\"%cD\\"" "' + file.path + '"',
       {cwd: file.cwd}
     )
 
