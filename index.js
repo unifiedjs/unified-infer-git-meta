@@ -1,4 +1,6 @@
 /**
+ * @typedef {import('./complex-types.js')} DoNotTouchThisAsItIncludesAugmentation
+ *
  * @callback Format
  *   Format function.
  * @param {Array<string>} authors
@@ -111,9 +113,8 @@ export default function unifiedInferGitMeta(options = {}) {
     const matter = /** @type {Record<string, unknown>} */ (
       file.data.matter || {}
     )
-    const meta = /** @type {Record<string, unknown>} */ (
-      file.data.meta || (file.data.meta = {})
-    )
+    const meta = file.data.meta || (file.data.meta = {})
+
     if (!matter.published && !meta.published) meta.published = published
     if (!matter.modified && !meta.modified) meta.modified = modified
     if (author && !matter.author && !meta.author) meta.author = author
