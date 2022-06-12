@@ -175,7 +175,7 @@ test('unifiedInferGitMeta', async (t) => {
 /**
  * @param {string} path
  * @param {Options} [options]
- * @returns {Promise.<Record<string, unknown>>}
+ * @returns {Promise<Record<string, unknown>>}
  */
 async function run(path, options) {
   /** @type {Root} */

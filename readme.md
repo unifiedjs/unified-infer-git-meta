@@ -99,8 +99,8 @@ abbreviated list of top authors of the file.
 
 ###### `options.locales`
 
-Locale(s) to use to join authors and sort their names (`string` or `string[]`,
-default: `'en'`).
+Locale(s) to use to join authors and sort their names (`string` or
+`Array<string>`, default: `'en'`).
 
 ###### `options.limit`
 
@@ -114,7 +114,7 @@ Text to use to label more authors when abbreviating (`string`, default:
 
 ###### `options.format`
 
-Alternative format function to use (`(authors: string[]) => string`).
+Alternative format function to use (`(authors: Array<string>) => string`).
 Is given a list of abbreviated author names.
 If the list of authors had to be abbreviated, the last author is instead
 replaced by `authorRest`.

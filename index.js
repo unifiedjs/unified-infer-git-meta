@@ -1,10 +1,14 @@
 /**
  * @callback Format
- * @param {string[]} authors
+ *   Format function.
+ * @param {Array<string>} authors
+ *   List of authors.
  * @returns {string}
+ *   Formatted authors.
  *
  * @typedef Options
- * @property {string|string[]} [locales='en']
+ *   Configuration (optional).
+ * @property {string|Array<string>} [locales='en']
  *   Locale(s) to use to join authors and sort their names.
  * @property {number} [limit=3]
  *   Maximum number of authors to include.
@@ -40,7 +44,7 @@ export default function unifiedInferGitMeta(options = {}) {
   const limit = options.limit || 3
   const rest = options.authorRest || 'others'
   const collator = new Intl.Collator(locales)
-  /** @type {{format(items: string[]): string}} */
+  /** @type {{format(items: Array<string>): string}} */
   // @ts-expect-error: TS doesn’t know about `ListFormat` yet.
   const listFormat = new Intl.ListFormat(locales)
 
