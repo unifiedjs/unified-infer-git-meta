@@ -119,48 +119,57 @@ test('unifiedInferGitMeta', async (t) => {
     '`modified`, `published`: should be equal and set to `now` if the file is not comitted'
   )
 
+  let {author} = await run('example-a.txt', {locales: 'en-GB'})
   t.equal(
-    (await run('example-a.txt', {locales: 'en-GB'})).author,
+    author,
     // Note: no oxford comma.
     localeAware ? 'Alpha, Bravo and others' : 'Alpha, Bravo, and others',
     '`author`: should support `locales`'
   )
 
+  // .
+  ;({author} = await run('example-a.txt', {
+    locales: 'ru',
+    authorRest: 'другие'
+  }))
+
   t.equal(
-    (await run('example-a.txt', {locales: 'ru', authorRest: 'другие'})).author,
+    author,
     localeAware ? 'Alpha, Bravo и другие' : 'Alpha, Bravo, and другие',
     '`author`: should support `authorRest`'
   )
 
+  // .
+  ;({author} = await run('example-a.txt', {limit: -1}))
+
   t.equal(
-    (await run('example-a.txt', {limit: -1})).author,
+    author,
     'Alpha, Bravo, Charlie, and Delta',
     '`author`: should not abbreviate with `limit: -1`'
   )
 
+  // .
+  ;({author} = await run('example-a.txt', {limit: 2}))
+
   t.equal(
-    (await run('example-a.txt', {limit: 2})).author,
+    author,
     'Alpha and others',
     '`author`: should abbreviate with `limit: 2`'
   )
 
-  t.equal(
-    (await run('example-a.txt', {limit: 1})).author,
-    'Alpha',
-    '`author`: should abbreviate with `limit: 1`'
-  )
+  // .
+  ;({author} = await run('example-a.txt', {limit: 1}))
 
-  t.equal(
-    (
-      await run('example-a.txt', {
-        format(authors) {
-          return authors.join('|')
-        }
-      })
-    ).author,
-    'Alpha|Bravo|others',
-    '`author`: should support `format`'
-  )
+  t.equal(author, 'Alpha', '`author`: should abbreviate with `limit: 1`')
+
+  // .
+  ;({author} = await run('example-a.txt', {
+    format(authors) {
+      return authors.join('|')
+    }
+  }))
+
+  t.equal(author, 'Alpha|Bravo|others', '`author`: should support `format`')
 })
 
 /**
