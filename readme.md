@@ -7,22 +7,73 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-[**unified**][unified] plugin to infer file metadata from Git.
-This plugin sets `file.data.meta.{published,modified,author}`.
-This is mostly useful with [`rehype-meta`][rehype-meta].
+**[unified][]** plugin to infer file metadata from Git of a document.
+
+## Contents
+
+*   [What is this?](#what-is-this)
+*   [When should I use this?](#when-should-i-use-this)
+*   [Install](#install)
+*   [Use](#use)
+*   [API](#api)
+    *   [`unified().use(unifiedInferGitMeta, options?)`](#unifieduseunifiedinfergitmeta-options)
+*   [Types](#types)
+*   [Compatibility](#compatibility)
+*   [Related](#related)
+*   [Contribute](#contribute)
+*   [License](#license)
+
+## What is this?
+
+This package is a [unified][] plugin to infer when content was first published,
+last modified, and who contributed to it, from Git.
+
+**unified** is a project that transforms content with abstract syntax trees
+(ASTs).
+**vfile** is the virtual file interface used in unified.
+This is a unified plugin that extracts metadata from Git and exposes it on the
+vfile.
+
+## When should I use this?
+
+This plugin is particularly useful in combination with
+[`rehype-meta`][rehype-meta].
+When both are used together, output such as the following is generated:
+
+```html
+<meta name="copyright" content="© 2019 Jane">
+<meta name="author" content="Jane">
+<!-- … -->
+<meta property="article:published_time" content="2019-12-02T10:00:00.000Z">
+<meta property="article:modified_time" content="2019-12-03T19:13:00.000Z">
+```
 
 ## Install
 
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
-Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
-
-[npm][]:
+This package is [ESM only][esm].
+In Node.js (version 12.20+, 14.14+, 16.0+, or 18.0+), install with [npm][]:
 
 ```sh
 npm install unified-infer-git-meta
 ```
 
+In Deno with [`esm.sh`][esmsh]:
+
+```js
+import unifiedInferGitMeta from 'https://esm.sh/unified-infer-git-meta@1'
+```
+
+In browsers with [`esm.sh`][esmsh]:
+
+```html
+<script type="module">
+  import unifiedInferGitMeta from 'https://esm.sh/unified-infer-git-meta@1?bundle'
+</script>
+```
+
 ## Use
+
+Say our module `example.js` looks as follows:
 
 ```js
 import {read} from 'to-vfile'
@@ -35,29 +86,25 @@ import rehypeMeta from 'rehype-meta'
 import rehypeFormat from 'rehype-format'
 import rehypeStringify from 'rehype-stringify'
 
-main()
+const file = await unified()
+  .use(remarkParse)
+  .use(unifiedInferGitMeta)
+  .use(remarkRehype)
+  .use(rehypeDocument)
+  .use(rehypeMeta, {
+    // Published and modified are only added if these two are also defined:
+    og: true,
+    type: 'article'
+  })
+  .use(rehypeFormat)
+  .use(rehypeStringify)
+  .process(await read('readme.md'))
 
-async function main() {
-  const file = await unified()
-    .use(remarkParse)
-    .use(unifiedInferGitMeta)
-    .use(remarkRehype)
-    .use(rehypeDocument)
-    .use(rehypeMeta, {
-      // Published, modified are only added if these two are also defined:
-      og: true,
-      type: 'article'
-    })
-    .use(rehypeFormat)
-    .use(rehypeStringify)
-    .process(await read('readme.md'))
-
-  console.log(file.data)
-  console.log(String(file))
-}
+console.log(file.data)
+console.log(String(file))
 ```
 
-Now, running our module with `node example.js`, yields:
+…now running `node example.js` yields:
 
 ```js
 {
@@ -86,16 +133,22 @@ Now, running our module with `node example.js`, yields:
 
 ## API
 
-This package exports a plugin as the default export.
+This package exports no identifiers.
+The default export is `unifiedInferGitMeta`.
 
 ### `unified().use(unifiedInferGitMeta, options?)`
 
-Plugin to infer some `meta` from Git.
+Infer some metadata from a document tracked with Git.
+Infer some `meta` from Git.
 
-This plugin sets [`file.data.meta.published`][meta-published] to the date a file
-was first committed, [`file.data.meta.modified`][meta-modified] to the date a
-file was last committed, and [`file.data.meta.author`][meta-author] to an
-abbreviated list of top authors of the file.
+This plugin sets [`file.data.meta.published`][meta-published] to the date a
+file was first committed, [`file.data.meta.modified`][meta-modified] to the
+date a file was last committed, and [`file.data.meta.author`][meta-author] to
+an abbreviated list of top authors of the file.
+
+##### `options`
+
+Configuration (optional).
 
 ###### `options.locales`
 
@@ -120,16 +173,44 @@ If the list of authors had to be abbreviated, the last author is instead
 replaced by `authorRest`.
 Set `limit: -1` to receive all author names.
 
+## Types
+
+This package is fully typed with [TypeScript][].
+The additional types `Format` and `Options` are exported.
+
+It also registers the `file.data.meta` fields with `vfile`.
+If you’re working with the file, make sure to import this plugin somewhere in
+your types, as that registers the new fields on the file.
+
+```js
+/**
+ * @typedef {import('unified-infer-git-meta')}
+ */
+
+import {VFile} from 'vfile'
+
+const file = new VFile()
+
+console.log(file.data.meta.published) //=> TS now knows that this is a `Date?`.
+```
+
+## Compatibility
+
+Projects maintained by the unified collective are compatible with all maintained
+versions of Node.js.
+As of now, that is Node.js 12.20+, 14.14+, 16.0+, and 18.0+.
+Our projects sometimes work with older versions, but this is not guaranteed.
+
 ## Related
 
 *   [`rehype-meta`](https://github.com/rehypejs/rehype-meta)
-    — Add metadata to the head of a document
+    — add metadata to the head of a document
 *   [`rehype-infer-title-meta`](https://github.com/rehypejs/rehype-infer-title-meta)
-    — Infer file metadata from the title of a document
+    — infer file metadata from the title of a document
 *   [`rehype-infer-description-meta`](https://github.com/rehypejs/rehype-infer-description-meta)
-    — Infer file metadata from the description of a document
+    — infer file metadata from the description of a document
 *   [`rehype-infer-reading-time-meta`](https://github.com/rehypejs/rehype-infer-reading-time-meta)
-    — Infer file metadata from the reading time of a document
+    — infer file metadata from the reading time of a document
 
 ## Contribute
 
@@ -171,13 +252,19 @@ abide by its terms.
 
 [npm]: https://docs.npmjs.com/cli/install
 
+[esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+
+[esmsh]: https://esm.sh
+
+[typescript]: https://www.typescriptlang.org
+
 [health]: https://github.com/unifiedjs/.github
 
-[contributing]: https://github.com/unifiedjs/.github/blob/HEAD/contributing.md
+[contributing]: https://github.com/unifiedjs/.github/blob/main/contributing.md
 
-[support]: https://github.com/unifiedjs/.github/blob/HEAD/support.md
+[support]: https://github.com/unifiedjs/.github/blob/main/support.md
 
-[coc]: https://github.com/unifiedjs/.github/blob/HEAD/code-of-conduct.md
+[coc]: https://github.com/unifiedjs/.github/blob/main/code-of-conduct.md
 
 [license]: license
 
